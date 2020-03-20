@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chen.mybatis.demo2.mapper.BlogTypeHandlerCustomMapper">
+
+    <insert id="insertBlog" parameterType="com.chen.mybatis.demo2.pojo.Blog" useGeneratedKeys="true" keyProperty="id">
+        insert into `t_blog`(`NAME`,`BOOK`)
+        values(#{name},#{books,typeHandler=com.chen.mybatis.demo2.typehandler.GenericTypeHandler})
+    </insert>
+
+    <select id="selectOne" resultMap="result">
+        SELECT * FROM  T_BLOG WHERE ID = #{id}
+    </select>
+    
+    <resultMap id="result"  type="com.chen.mybatis.demo2.pojo.Blog">
+        <id property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="books" column="BOOK" typeHandler="com.chen.mybatis.demo2.typehandler.GenericTypeHandler" javaType="java.util.HashSet" />
+    </resultMap>
+
+</mapper>

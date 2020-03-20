@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chen.mybatis.demo3.mapper.FParameterMapper">
+
+    <!--    parameterType 指定传入参数类型-->
+    <!--    resultType 指定返回类型-->
+    <select id="selectBlogById" resultType="com.chen.mybatis.demo3.pojo.Blog" parameterType="long">
+        select * from t_blog where id = #{id};
+    </select>
+
+    <insert id="insertBlog" parameterType="com.chen.mybatis.demo3.pojo.Blog">
+        insert into t_blog(NAME,BOOK,CREATE_TIME)
+        VALUE(#{name},#{book},#{createTime})
+    </insert>
+
+<!--    numericScale 设置数字保留的小数点后的保留位数-->
+    <insert id="insertBlogWithHashMap" parameterType="hashmap">
+                insert into t_blog(NAME,BOOK,CREATE_TIME,PRICE)
+        VALUE(
+        #{name,javaType=String,jdbcType=VARCHAR},
+        #{book,javaType=String,jdbcType=VARCHAR},
+        #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP})
+        #{price,javaType=double,jdbcType=DECIMAL,numericScale=2})
+    </insert>
+
+    <select id="selectBlogListOrderBy" resultType="com.chen.mybatis.demo3.pojo.Blog">
+        select * from t_blog order by ${orderColumn} limit 5
+    </select>
+
+    <select id="selectBlogListByColumn" resultType="com.chen.mybatis.demo3.pojo.Blog">
+        select * from t_blog where ${column} = #{value}
+    </select>
+
+
+    <select id="selectBlogWithSql" resultType="com.chen.mybatis.demo3.pojo.Blog">
+        ${sql}
+    </select>
+
+
+    <select id="selectBlogByIDInto" resultType="com.chen.mybatis.demo3.pojo.Blog">
+        select * from t_blog where ID = ${id}
+    </select>
+
+    <select id="selectBlogByIdToString" resultType="com.chen.mybatis.demo3.pojo.Blog">
+         select * from t_blog where ID = #{id}
+    </select>
+
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chen.mybatis.demo2.mapper.BlogGenericEnumTypeHandlerMapper">
+    <insert id="insertBlog" parameterType="com.chen.mybatis.demo2.pojo.BlogGeneric" useGeneratedKeys="true" keyProperty="id">
+        insert into `t_blog`(`NAME`,`CREATE_TIME`,BLOG_TYPE)
+        values(#{name},#{createTime},#{blogType})
+    </insert>
+
+    <select id="selectOne" resultMap="result">
+        SELECT * FROM  T_BLOG WHERE ID = #{id}
+    </select>
+
+    <resultMap id="result"  type="com.chen.mybatis.demo2.pojo.BlogGeneric">
+        <id property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="blogType" column="BLOG_TYPE"/>
+    </resultMap>
+
+</mapper>

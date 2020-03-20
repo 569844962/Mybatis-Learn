@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="mysql_development">
+        <environment id="mysql_development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis-test?serverTimezone=UTC" />
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+                <property name="env.encoding" value="UTF8"/>
+            </dataSource>
+        </environment>
+        <environment id="oracle_development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="oracle.jdbc.driver.OracleDriver"/>
+                <property name="url" value="jdbc:oracle:thin:@119.23.236.51:11521:helowin" />
+                <property name="username" value="RUOXIU"/>
+                <property name="password" value="RUOXIU"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper class="com.chen.mybatis.demo2.mapper.BlogMapper"/>
+        <mapper class="com.chen.mybatis.demo2.mapper.StudentMapper"/>
+    </mappers>
+</configuration>

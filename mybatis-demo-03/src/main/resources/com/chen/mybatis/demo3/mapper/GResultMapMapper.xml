@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chen.mybatis.demo3.mapper.GResultMapMapper">
+
+
+    <select id="selectById" resultType="map">
+        select  * from  t_blog where ID = #{id}
+    </select>
+
+    <select id="selectToDBJavaBean" resultType="com.chen.mybatis.demo3.pojo.BlogDb">
+        select ID,NAME,CREATE_TIME,BOOK FROM t_blog where ID = #{id}
+    </select>
+
+    <select id="selectToJavaBeanWithTypeAlias" resultType="blogDb">
+        select ID,NAME,CREATE_TIME,BOOK FROM t_blog where ID = #{id}
+    </select>
+
+    <select id="selectResultTypeToBlog" resultType="com.chen.mybatis.demo3.pojo.Blog">
+        select
+        ID as 'id',
+        NAME as 'name',
+        CREATE_TIME as 'createTime',
+        BOOK as 'book'
+        FROM t_blog where ID = #{id}
+    </select>
+
+<!--    ResultMap mapper to javaBean-->
+
+    <resultMap id="dbResultMapToBlog" type="com.chen.mybatis.demo3.pojo.Blog">
+        <id property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="book" column="BOOK"/>
+    </resultMap>
+
+    <select id="selectResultMapperToBlog" resultMap="dbResultMapToBlog">
+        select ID,NAME,CREATE_TIME,BOOK FROM t_blog where ID = #{id}
+    </select>
+
+<!--  ResultMap constructor & association & collection -->
+
+    <resultMap id="blogInfoResultMap" type="com.chen.mybatis.demo3.pojo.BlogInfo">
+        <constructor>
+            <idArg column="ID" javaType="Integer" />
+        </constructor>
+        <association property="blog" javaType="com.chen.mybatis.demo3.pojo.Blog">
+            <id property="id" column="ID"/>
+            <result property="book" column="BOOK"/>
+            <result property="name" column="NAME"/>
+            <result property="createTime" column="CREATE_TIME"/>
+        </association>
+        <association property="user" javaType="com.chen.mybatis.demo3.pojo.User">
+            <id property="userId" column="USER_ID"/>
+            <result property="mobile" column="MOBILE"/>
+            <result property="userName" column="USER_NAME"/>
+        </association>
+        <collection property="blogMessages" ofType="com.chen.mybatis.demo3.pojo.BlogMessage">
+            <id property="messageId" column="MESSAGE_ID" />
+            <result property="blogId" column="BLOG_ID"/>
+            <result property="message" column="MESSAGE"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectBlogInfo" resultMap="blogInfoResultMap">
+        SELECT
+            b.ID,
+            b.`NAME`,
+            b.BOOK,
+            b.CREATE_TIME,
+            u.USER_ID,
+            u.USER_NAME,
+            u.MOBILE,
+            m.MESSAGE_ID,
+            m.BLOG_ID,
+            m.MESSAGE
+        FROM
+            t_blog b
+            LEFT JOIN t_user u ON b.USER_ID = u.USER_ID
+            LEFT JOIN t_blog_message m ON b.ID = m.BLOG_ID
+        WHERE
+            b.ID = #{id}
+    </select>
+
+<!-- ResultMap constructor -->
+
+    <resultMap id="blogConstructor" type="com.chen.mybatis.demo3.pojo.BlogConstructor">
+        <constructor>
+            <idArg column="ID"  name="id"/>
+            <arg column="BOOK"  name="book"/>
+            <arg column="NAME"  name="name"/>
+        </constructor>
+    </resultMap>
+
+    <select id="selectBlogToConstructor" resultMap="blogConstructor">
+        select * from T_BLOG WHERE ID = #{id};
+    </select>
+
+<!-- ResultMap Association simple -->
+
+    <resultMap id="blogAssociation" type="com.chen.mybatis.demo3.pojo.BlogAssociation">
+        <id property="id" column="ID"/>
+        <association property="user" javaType="com.chen.mybatis.demo3.pojo.User">
+            <id property="userId" column="USER_ID"/>
+            <result property="userName" column="USER_NAME"/>
+            <result property="mobile" column="MOBILE"/>
+        </association>
+    </resultMap>
+
+    <select id="selectBlogToAssociation" resultMap="blogAssociation">
+        SELECT
+            b.ID,
+            b.`NAME`,
+            b.BOOK,
+            b.CREATE_TIME,
+            u.USER_ID,
+            u.USER_NAME,
+            u.MOBILE,
+            m.MESSAGE_ID,
+            m.BLOG_ID,
+            m.MESSAGE
+        FROM
+            t_blog b
+            LEFT JOIN t_user u ON b.USER_ID = u.USER_ID
+            LEFT JOIN t_blog_message m ON b.ID = m.BLOG_ID
+        WHERE
+            b.ID = #{id}
+    </select>
+
+
+    <!-- ResultMap Association Inner select -->
+    <select id="associationSelectBlogUser" resultType="com.chen.mybatis.demo3.pojo.User">
+        select  USER_ID userId,USER_NAME userName,MOBILE mobile from  t_user WHERE USER_ID = #{userId}
+    </select>
+
+    <resultMap id="associationInnerSelectResultMap" type="com.chen.mybatis.demo3.pojo.BlogAssociation">
+        <association property="user" column="USER_ID" select="associationSelectBlogUser" javaType="com.chen.mybatis.demo3.pojo.User" fetchType="lazy"/>
+    </resultMap>
+
+    <select id="selectBlogToAssociationInnerSelect" resultMap="associationInnerSelectResultMap">
+        select * from T_BLOG where ID = #{id}
+    </select>
+
+
+    <resultMap id="associationWithColumnPrefixResultMap" type="com.chen.mybatis.demo3.pojo.BlogAssociationColumnPrefix">
+        <id property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="book" column="BOOK"/>
+        <association property="user" resultMap="userResultMap"/>
+        <association property="secondUser" resultMap="userResultMap" columnPrefix="S_"/>
+    </resultMap>
+
+    <resultMap id="userResultMap" type="com.chen.mybatis.demo3.pojo.User">
+        <id property="userId" column="USER_ID"/>
+        <result property="mobile" column="MOBILE"/>
+        <result property="userName" column="USER_NAME"/>
+    </resultMap>
+
+<!--    ResultMap Association With ColumnPrefix-->
+    <select id="selectBlogToAssociationWithColumnPrefix" resultMap="associationWithColumnPrefixResultMap">
+        SELECT
+            b.ID id,
+            b.NAME name,
+            b.BOOK book,
+            u1.USER_ID,
+            u1.USER_NAME,
+            u1.MOBILE,
+            u2.USER_ID S_USER_ID,
+            u2.USER_NAME S_USER_NAME,
+            u2.MOBILE S_MOBILE
+        FROM
+            t_blog b
+            LEFT JOIN t_user u1 ON b.USER_ID = u1.USER_ID
+            LEFT JOIN t_user u2 ON b.SECOND_USER_ID = u2.USER_ID
+        WHERE
+            b.ID = #{id}
+    </select>
+
+<!--    ResultMap ResultSets-->
+    <resultMap id="resultSetsToResultMap" type="com.chen.mybatis.demo3.pojo.BlogInfo">
+        <id property="blogId" column="ID"/>
+        <association property="blogInfoDb" javaType="com.chen.mybatis.demo3.pojo.BlogInfoDb" resultSet="blogInfo" column="ID" foreignColumn="BLOG_ID" fetchType="lazy">
+            <id property="blogInfoId" column="BLOG_INFO_ID"/>
+            <result property="blogId" column="BLOG_ID"/>
+            <result property="detail" column="DETAIL"/>
+        </association>
+    </resultMap>
+
+    <select id="selectResultMapWithResultSets" resultSets="blog,blogInfo" resultMap="resultSetsToResultMap">
+        select * from t_blog b where b.ID = #{id};
+        select * from t_blog_info bf where bf.BLOG_ID = #{id};
+    </select>
+
+<!--    ResultMap Collection-->
+    <resultMap id="resultMapCollection" type="com.chen.mybatis.demo3.pojo.BlogInfo">
+        <id property="blogId" column="ID"/>
+        <collection property="blogMessages" ofType="com.chen.mybatis.demo3.pojo.BlogMessage">
+            <id property="messageId" column="MESSAGE_ID"/>
+            <result property="blogId" column="BLOG_ID"/>
+            <result property="message" column="MESSAGE"/>
+        </collection>
+    </resultMap>
+    <select id="selectResultMapCollection" resultMap="resultMapCollection">
+        select * from t_blog b left join t_blog_message m on b.ID = m.BLOG_ID where b.ID = #{id}
+    </select>
+
+<!--    ResultMap Collection select-->
+    <resultMap id="collectionWithSelectResultMap" type="com.chen.mybatis.demo3.pojo.BlogInfo">
+        <id property="blogId" column="ID"/>
+        <collection property="blogMessages" column="ID" javaType="ArrayList" ofType="com.chen.mybatis.demo3.pojo.BlogMessage" select="selectMessage"/>
+    </resultMap>
+
+    <select id="selectMessage" resultType="com.chen.mybatis.demo3.pojo.BlogMessage">
+        select * from t_blog_message where BLOG_ID = #{id};
+    </select>
+
+    <select id="selectResultMapCollectionWithSelect" resultMap="collectionWithSelectResultMap">
+        select * from t_blog where ID = #{id};
+    </select>
+
+<!--    ResultMap Collection ResultSet-->
+    <resultMap id="collectionWithResultSetResultMap" type="com.chen.mybatis.demo3.pojo.BlogInfo">
+        <id property="blogId" column="ID"/>
+        <collection property="blogMessages" resultSet="message" column="ID" foreignColumn="BLOG_ID" ofType="com.chen.mybatis.demo3.pojo.BlogMessage">
+            <id property="messageId" column="MESSAGE_ID"/>
+            <result property="blogId" column="BLOG_ID"/>
+            <result property="message" column="MESSAGE"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectResultMapCollectionWithResultSet"  resultSets="blog,message" resultMap="collectionWithResultSetResultMap">
+        select * from t_blog where ID = #{id};
+        select * from t_blog_message where BLOG_ID = #{blogId};
+    </select>
+
+<!--    ResultMap Collection Discriminator-->
+    <resultMap id="discriminatorResultMap" type="com.chen.mybatis.demo3.pojo.BlogDiscriminator">
+        <id property="blogId" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="book" column="BOOK"/>
+        <discriminator javaType="String" column="IS_PAY">
+            <case value="1" resultMap="payResultMap"/>
+        </discriminator>
+    </resultMap>
+    
+    <resultMap id="payResultMap" type="com.chen.mybatis.demo3.pojo.BlogDiscriminator">
+        <id property="blogId" column="ID"/>
+        <association property="pay" column="ID"  javaType="com.chen.mybatis.demo3.pojo.Pay" select="selectBlogPay"/>
+    </resultMap>
+
+    <select id="selectBlogPay" resultType="com.chen.mybatis.demo3.pojo.Pay">
+        select PAY_ID payId,BLOG_ID blogId,PRICE,PAY_WAY payWay from t_pay where BLOG_ID = #{id}
+    </select>
+    
+    <select id="selectResultMapDiscriminator" resultMap="discriminatorResultMap" >
+        select * from t_blog where ID = #{id}
+    </select>
+
+<!--    ResultMap AutoMapper 自动映射-->
+    <resultMap id="resultMapAutoMapperTest" type="com.chen.mybatis.demo3.pojo.BlogInfo">
+        <id property="blogId" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <association property="user" resultMap="userAutoMapper"/>
+    </resultMap>
+
+    <resultMap id="userAutoMapper" type="com.chen.mybatis.demo3.pojo.User">
+        <id property="userId" column="USER_ID"/>
+        <result property="mobile" column="MOBILE"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="createTime" column="CREATE_TIME"/>
+    </resultMap>
+
+    <select id="selectBlogAutoMapperTest" resultMap="resultMapAutoMapperTest" >
+        select * from t_blog b left join t_user u on b.USER_ID = u.USER_ID where b.ID = #{id}
+    </select>
+
+    <cache
+        eviction="FIFO"
+        flushInterval="60000"
+        size="512"
+        readOnly="true"/>
+
+
+</mapper>

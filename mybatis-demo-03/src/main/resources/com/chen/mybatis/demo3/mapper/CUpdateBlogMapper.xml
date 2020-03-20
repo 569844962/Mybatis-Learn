@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chen.mybatis.demo3.mapper.CUpdateBlogMapper">
+
+<!--
+    useGeneratedKeys:MyBatis 使用 JDBC 的 getGeneratedKeys 方法来取出由数据库内部生成的主键(如：mybatis的自增主键值),（仅对 insert 和 update 有用）
+    keyProperty：唯一标记一个属性(主建),（仅对 insert 和 update 有用）
+    useGeneratedKeys 和 keyProperty 同时使用
+    用于update并没有返回主建值
+ -->
+
+    <update id="updateBlog" parameterType="com.chen.mybatis.demo3.pojo.Blog" useGeneratedKeys="true" keyProperty="id" >
+        update T_BLOG SET BOOK = #{book} where NAME = #{name}
+    </update>
+
+</mapper>
