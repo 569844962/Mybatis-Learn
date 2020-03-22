@@ -87,4 +87,15 @@
         </foreach>
     </select>
 
+    <select id="selectWithBind" resultType="com.chen.mybatis.demo4.pojo.Blog">
+        <bind name="blogNameLike" value="'%' + name + '%'"/>
+        select * from t_blog where NAME LIKE #{blogNameLike}
+    </select>
+
+    <select id="getDatabaseId" resultType="java.lang.String">
+        <if test="_databaseId == 'mysql'">
+            select #{_databaseId} from dual
+        </if>
+    </select>
+    
 </mapper>

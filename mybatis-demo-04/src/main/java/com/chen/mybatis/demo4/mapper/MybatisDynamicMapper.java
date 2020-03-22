@@ -37,4 +37,8 @@ public interface MybatisDynamicMapper {
             "</script>"}
     )
     List<Blog> selectWithScript(@Param("name") String name);
+
+    List<Blog> selectWithBind(@Param("name") String name);
+
+    String getDatabaseId();
 }

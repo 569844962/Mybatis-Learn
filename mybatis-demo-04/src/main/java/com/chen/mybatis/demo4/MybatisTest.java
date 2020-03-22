@@ -10,6 +10,8 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -159,6 +161,38 @@ public class MybatisTest {
             MybatisDynamicMapper mapper = sqlSession.getMapper(MybatisDynamicMapper.class);
             List<Blog> blogList = mapper.selectWithScript("o博客");
             System.out.println(blogList);
+        }
+    }
+
+    /**
+     * mybatis bind xml文件中创建一个变量
+     *
+     */
+    @Test
+    public void selectWithBind() throws IOException {
+        SqlSessionFactory sqlSessionFactory = this.initSqlSessionFactory();
+        try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
+            MybatisDynamicMapper mapper = sqlSession.getMapper(MybatisDynamicMapper.class);
+            List<Blog> blogList = mapper.selectWithBind("o博客");
+            System.out.println(blogList);
+        }
+    }
+
+    /**
+     * mybatis 获取数据库类型
+     *
+     */
+    @Test
+    public void getDatabaseId() throws IOException, SQLException {
+        SqlSessionFactory sqlSessionFactory = this.initSqlSessionFactory();
+        try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
+            Connection connection = sqlSession.getConnection();
+            String databaseProductName = connection.getMetaData().getDatabaseProductName();
+            String databaseProductVersion = connection.getMetaData().getDatabaseProductVersion();
+            System.out.println("数据库版本=====" + databaseProductName + ":" + databaseProductVersion);
+            MybatisDynamicMapper mapper = sqlSession.getMapper(MybatisDynamicMapper.class);
+            String databaseId = mapper.getDatabaseId();
+            System.out.println(databaseId);
         }
     }
 
